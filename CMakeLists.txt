@@ -5,6 +5,8 @@ IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
 
+set (ros_include_path /opt/ros/$ENV{ROS_DISTRO}/include)
+
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
@@ -39,11 +41,29 @@ endif()
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
 
+# Ros related libraries
+find_package(roscpp REQUIRED)
+find_package(rosconsole REQUIRED)
+find_package(rostime REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+# Required for generating message type
+find_package(catkin REQUIRED)
+find_package(genmsg REQUIRED)
+
+# Custom message type generation
+add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES PoseList.msg)
+generate_messages(DEPENDENCIES geometry_msgs)
+
 include_directories(
+${ros_include_path}
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
+${std_msgs_INCLUDE_DIRS}
+${roscpp_INCLUDE_DIRS}
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -76,6 +96,7 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+${roscpp_LIBRARIES} 
 )
 
 # Build examples
@@ -83,31 +104,38 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 
 add_executable(rgbd_tum
-Examples/RGB-D/rgbd_tum.cc)
-target_link_libraries(rgbd_tum ${PROJECT_NAME})
+               Examples/RGB-D/rgbd_tum.cc)
+add_dependencies(rgbd_tum ${PROJECT_NAME}_generate_messages)
+target_link_libraries(rgbd_tum ${PROJECT_NAME} )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
 
 add_executable(stereo_kitti
-Examples/Stereo/stereo_kitti.cc)
-target_link_libraries(stereo_kitti ${PROJECT_NAME})
+               Examples/Stereo/stereo_kitti.cc)
+add_dependencies(stereo_kitti ${PROJECT_NAME}_generate_messages)
+target_link_libraries(stereo_kitti ${PROJECT_NAME}  )
 
 add_executable(stereo_euroc
-Examples/Stereo/stereo_euroc.cc)
-target_link_libraries(stereo_euroc ${PROJECT_NAME})
+               Examples/Stereo/stereo_euroc.cc)
+add_dependencies(stereo_euroc ${PROJECT_NAME}_generate_messages)
+target_link_libraries(stereo_euroc ${PROJECT_NAME} )
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
 add_executable(mono_tum
-Examples/Monocular/mono_tum.cc)
-target_link_libraries(mono_tum ${PROJECT_NAME})
+               Examples/Monocular/mono_tum.cc)
+add_dependencies(mono_tum ${PROJECT_NAME}_generate_messages)
+target_link_libraries(mono_tum ${PROJECT_NAME} )
 
 add_executable(mono_kitti
-Examples/Monocular/mono_kitti.cc)
-target_link_libraries(mono_kitti ${PROJECT_NAME})
+               Examples/Monocular/mono_kitti.cc)
+add_dependencies(mono_kitti ${PROJECT_NAME}_generate_messages)
+target_link_libraries(mono_kitti ${PROJECT_NAME}  )
 
 add_executable(mono_euroc
-Examples/Monocular/mono_euroc.cc)
-target_link_libraries(mono_euroc ${PROJECT_NAME})
+               Examples/Monocular/mono_euroc.cc)
+add_dependencies(mono_euroc ${PROJECT_NAME}_generate_messages)
+target_link_libraries(mono_euroc ${PROJECT_NAME} )
+
 

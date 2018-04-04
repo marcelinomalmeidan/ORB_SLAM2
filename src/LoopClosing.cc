@@ -439,6 +439,15 @@ void LoopClosing::CorrectLoop()
     CorrectedSim3[mpCurrentKF]=mg2oScw;
     cv::Mat Twc = mpCurrentKF->GetPoseInverse();
 
+    // cv::Size size = Twc.size();
+
+    // for(int i = 0; i < size.height; i++) {
+    //     for(int j = 0; j < size.width; j++) {
+    //         std::cout << Twc.at<double>(i,j) << "\t";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
     {
         // Get Map Mutex

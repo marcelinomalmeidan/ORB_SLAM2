@@ -38,6 +38,10 @@ if(NOT OpenCV_FOUND)
    endif()
 endif()
 
+# # Add the defined ROS message
+# find_package(ORB_SLAM2-genmsg REQUIRED)
+# include_directories(${geometry_msgs_INCLUDE_DIRS})
+
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
 
@@ -45,6 +49,7 @@ include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/../../../
 ${PROJECT_SOURCE_DIR}/../../../include
+${PROJECT_SOURCE_DIR}/../../../build/devel/include
 ${Pangolin_INCLUDE_DIRS}
 )
 
@@ -55,6 +60,7 @@ ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/g2o/lib/libg2o.so
 ${PROJECT_SOURCE_DIR}/../../../lib/libORB_SLAM2.so
+-lboost_system
 )
 
 # Node for monocular camera
@@ -72,6 +78,7 @@ src/AR/ros_mono_ar.cc
 src/AR/ViewerAR.h
 src/AR/ViewerAR.cc
 )
+# add_dependencies(MonoAR ${PROJECT_NAME}_generate_messages)
 
 target_link_libraries(MonoAR
 ${LIBS}
@@ -81,6 +88,7 @@ ${LIBS}
 rosbuild_add_executable(Stereo
 src/ros_stereo.cc
 )
+# add_dependencies(Stereo ${PROJECT_NAME}_generate_messages)
 
 target_link_libraries(Stereo
 ${LIBS}
@@ -90,6 +98,7 @@ ${LIBS}
 rosbuild_add_executable(RGBD
 src/ros_rgbd.cc
 )
+# add_dependencies(RGBD ${PROJECT_NAME}_generate_messages)
 
 target_link_libraries(RGBD
 ${LIBS}

@@ -148,6 +148,119 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
 }
 
+Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Map *pMap,
+                    KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, ros::NodeHandle *nh):
+    mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
+    mpKeyFrameDB(pKFDB), mpInitializer(static_cast<Initializer*>(NULL)), mpSystem(pSys), mpViewer(NULL),
+    mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0)
+{
+    //ROS stuff
+    n_ = *nh;
+    // pose_list_pub_ = n_.advertise<ORB_SLAM2::PoseList>("PoseList", 10);
+    pose_pub_cam_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseCamFrame", 10);
+    pose_pub_world_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseWorldFrame", 10);
+    use_ros_ = true;
+
+    // Load camera parameters from settings file
+
+    cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
+    float fx = fSettings["Camera.fx"];
+    float fy = fSettings["Camera.fy"];
+    float cx = fSettings["Camera.cx"];
+    float cy = fSettings["Camera.cy"];
+
+    cv::Mat K = cv::Mat::eye(3,3,CV_32F);
+    K.at<float>(0,0) = fx;
+    K.at<float>(1,1) = fy;
+    K.at<float>(0,2) = cx;
+    K.at<float>(1,2) = cy;
+    K.copyTo(mK);
+
+    cv::Mat DistCoef(4,1,CV_32F);
+    DistCoef.at<float>(0) = fSettings["Camera.k1"];
+    DistCoef.at<float>(1) = fSettings["Camera.k2"];
+    DistCoef.at<float>(2) = fSettings["Camera.p1"];
+    DistCoef.at<float>(3) = fSettings["Camera.p2"];
+    const float k3 = fSettings["Camera.k3"];
+    if(k3!=0)
+    {
+        DistCoef.resize(5);
+        DistCoef.at<float>(4) = k3;
+    }
+    DistCoef.copyTo(mDistCoef);
+
+    mbf = fSettings["Camera.bf"];
+
+    float fps = fSettings["Camera.fps"];
+    if(fps==0)
+        fps=30;
+
+    // Max/Min Frames to insert keyframes and to check relocalisation
+    mMinFrames = 0;
+    mMaxFrames = fps;
+
+    cout << endl << "Camera Parameters: " << endl;
+    cout << "- fx: " << fx << endl;
+    cout << "- fy: " << fy << endl;
+    cout << "- cx: " << cx << endl;
+    cout << "- cy: " << cy << endl;
+    cout << "- k1: " << DistCoef.at<float>(0) << endl;
+    cout << "- k2: " << DistCoef.at<float>(1) << endl;
+    if(DistCoef.rows==5)
+        cout << "- k3: " << DistCoef.at<float>(4) << endl;
+    cout << "- p1: " << DistCoef.at<float>(2) << endl;
+    cout << "- p2: " << DistCoef.at<float>(3) << endl;
+    cout << "- fps: " << fps << endl;
+
+
+    int nRGB = fSettings["Camera.RGB"];
+    mbRGB = nRGB;
+
+    if(mbRGB)
+        cout << "- color order: RGB (ignored if grayscale)" << endl;
+    else
+        cout << "- color order: BGR (ignored if grayscale)" << endl;
+
+    // Load ORB parameters
+
+    int nFeatures = fSettings["ORBextractor.nFeatures"];
+    float fScaleFactor = fSettings["ORBextractor.scaleFactor"];
+    int nLevels = fSettings["ORBextractor.nLevels"];
+    int fIniThFAST = fSettings["ORBextractor.iniThFAST"];
+    int fMinThFAST = fSettings["ORBextractor.minThFAST"];
+
+    mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+
+    if(sensor==System::STEREO)
+        mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+
+    if(sensor==System::MONOCULAR)
+        mpIniORBextractor = new ORBextractor(2*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+
+    cout << endl  << "ORB Extractor Parameters: " << endl;
+    cout << "- Number of Features: " << nFeatures << endl;
+    cout << "- Scale Levels: " << nLevels << endl;
+    cout << "- Scale Factor: " << fScaleFactor << endl;
+    cout << "- Initial Fast Threshold: " << fIniThFAST << endl;
+    cout << "- Minimum Fast Threshold: " << fMinThFAST << endl;
+
+    if(sensor==System::STEREO || sensor==System::RGBD)
+    {
+        mThDepth = mbf*(float)fSettings["ThDepth"]/fx;
+        cout << endl << "Depth Threshold (Close/Far Points): " << mThDepth << endl;
+    }
+
+    if(sensor==System::RGBD)
+    {
+        mDepthMapFactor = fSettings["DepthMapFactor"];
+        if(fabs(mDepthMapFactor)<1e-5)
+            mDepthMapFactor=1;
+        else
+            mDepthMapFactor = 1.0f/mDepthMapFactor;
+    }
+
+}
+
 void Tracking::SetLocalMapper(LocalMapping *pLocalMapper)
 {
     mpLocalMapper=pLocalMapper;
@@ -452,6 +565,53 @@ void Tracking::Track()
                 delete pMP;
             }
             mlpTemporalPoints.clear();
+
+            // Publish current pose to ROS
+            if(use_ros_) {
+                cv::Mat TransfMat = mCurrentFrame.mTcw;
+                Eigen::Vector3f t(TransfMat.at<float>(0,3), TransfMat.at<float>(1,3), TransfMat.at<float>(2,3));
+                Eigen::Matrix3f R;
+                R << TransfMat.at<float>(0,0), TransfMat.at<float>(0,1), TransfMat.at<float>(0,2),
+                     TransfMat.at<float>(1,0), TransfMat.at<float>(1,1), TransfMat.at<float>(1,2),
+                     TransfMat.at<float>(2,0), TransfMat.at<float>(2,1), TransfMat.at<float>(2,2);
+                Eigen::Quaternionf q(R);
+
+                // Set rotation in camera frame (z pointing outwards, x pointing to the right, y completes the triad)
+                Eigen::Quaternionf q_cam_rot1(cos(M_PI/4.0), 0.0, sin(M_PI/4.0), 0.0);
+                Eigen::Quaternionf q_cam_rot2(cos(M_PI/4.0), 0.0, 0.0, -sin(M_PI/4.0));    
+                Eigen::Quaternionf q_ = q_cam_rot1*q_cam_rot2*q.inverse();
+
+                Eigen::Quaternionf q_world(q_.w(), q_.z(), -q_.x(), -q_.y());
+                Eigen::Quaternionf q_world_rot1(cos(M_PI/4.0), 0.0, -sin(M_PI/4.0), 0.0);
+                Eigen::Quaternionf qworld_ = q_world_rot1*q_world;
+
+                // Populate ROS pose structure
+                geometry_msgs::PoseStamped pose_cam, pose_world;
+                pose_cam.pose.position.x = t(2);
+                pose_cam.pose.position.y = t(0);
+                pose_cam.pose.position.z = t(1);
+                pose_cam.pose.orientation.x = q_.x();
+                pose_cam.pose.orientation.y = q_.y();
+                pose_cam.pose.orientation.z = q_.z();
+                pose_cam.pose.orientation.w = q_.w();
+                pose_cam.header.stamp = ros::Time::now();
+                pose_cam.header.frame_id = frame_id_;
+
+                pose_world = pose_cam;
+                pose_world.pose.orientation.x = qworld_.x();
+                pose_world.pose.orientation.y = qworld_.y();
+                pose_world.pose.orientation.z = qworld_.z();
+                pose_world.pose.orientation.w = qworld_.w();
+
+                // pose_list_.PoseList.push_back(pose);
+                // if (pose_list_.PoseList.size() > window_size_) {
+                //     pose_list_.PoseList.pop_back();
+                // }
+
+                pose_pub_cam_frame_.publish(pose_cam);
+                pose_pub_world_frame_.publish(pose_world);
+                // pose_list_pub_.publish(pose_list_);
+            }
 
             // Check if we need to insert a new keyframe
             if(NeedNewKeyFrame())

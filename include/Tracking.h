@@ -22,21 +22,26 @@
 #ifndef TRACKING_H
 #define TRACKING_H
 
-#include<opencv2/core/core.hpp>
-#include<opencv2/features2d/features2d.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
 
-#include"Viewer.h"
-#include"FrameDrawer.h"
-#include"Map.h"
-#include"LocalMapping.h"
-#include"LoopClosing.h"
-#include"Frame.h"
+#include "Viewer.h"
+#include "FrameDrawer.h"
+#include "Map.h"
+#include "LocalMapping.h"
+#include "LoopClosing.h"
+#include "Frame.h"
 #include "ORBVocabulary.h"
-#include"KeyFrameDatabase.h"
-#include"ORBextractor.h"
+#include "KeyFrameDatabase.h"
+#include "ORBextractor.h"
 #include "Initializer.h"
 #include "MapDrawer.h"
 #include "System.h"
+
+// ROS-related libraries
+#include <ros/ros.h>
+#include "std_msgs/String.h"
+#include "ORB_SLAM2/PoseList.h"  // Custom message to send list of poses
 
 #include <mutex>
 
@@ -56,6 +61,9 @@ class Tracking
 public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
+
+    Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
+             KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, ros::NodeHandle *nh);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
     cv::Mat GrabImageStereo(const cv::Mat &imRectLeft,const cv::Mat &imRectRight, const double &timestamp);
@@ -214,6 +222,20 @@ protected:
     bool mbRGB;
 
     list<MapPoint*> mlpTemporalPoints;
+
+    // ROS wrapper for publishing pose
+    // Camera frame has z pointing out of the image plane, x to the right of the image, y completes the triad
+    // 
+    // |------>x
+    // |
+    // |
+    // \/y
+    //
+    ros::NodeHandle n_;
+    ros::Publisher pose_pub_cam_frame_; 
+    ros::Publisher pose_pub_world_frame_; 
+    std::string frame_id_ = "camera";
+    bool use_ros_ = false;
 };
 
 } //namespace ORB_SLAM

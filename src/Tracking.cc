@@ -594,7 +594,7 @@ void Tracking::Track()
                 pose_cam.pose.orientation.y = q_.y();
                 pose_cam.pose.orientation.z = q_.z();
                 pose_cam.pose.orientation.w = q_.w();
-                pose_cam.header.stamp = ros::Time::now();
+                pose_cam.header.stamp = ros::Time(mCurrentFrame.mTimeStamp);
                 pose_cam.header.frame_id = frame_id_;
 
                 pose_world = pose_cam;

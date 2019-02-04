@@ -1,9 +1,9 @@
 # ORB-SLAM2
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
-**04 Feb 2018**: ORB_SLAM publishes current pose to topics. It published a pose in camera frame (z pointing outwards from the camera) and in world frame (z pointing up from initial pose). As of this version, ORB_SLAM2 always needs ROS to compile (one could compile ORB_SLAM2 without compiling its ROS version before).
+**04 Feb 2019**: ORB_SLAM publishes current pose to topics. It published a pose in camera frame (z pointing outwards from the camera) and in world frame (z pointing up from initial pose). As of this version, ORB_SLAM2 always needs ROS to compile (one could compile ORB_SLAM2 without compiling its ROS version before).
 
-**14 Jul 2017**: Binary format ORB vocabulary and Map save/load are now supported(See section 10 and 11).
+**14 Jul 2017**: Binary format ORB vocabulary and Map save/load are now supported(See section 10 and 11). See original repository: https://github.com/Alkaid-Benetnash
 
 **13 Jan 2017**: OpenCV 3 and Eigen 3.3 are now supported.
 

@@ -93,16 +93,16 @@ Clone the repository:
 git clone https://github.com/raulmur/ORB_SLAM2.git ORB_SLAM2
 ```
 
+Add the following line to your .bashrc:
+```
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:PATH/ORB_SLAM2/Examples/ROS
+```
+
 We provide a script `build.sh` to build the *Thirdparty* libraries and *ORB-SLAM2*. Please make sure you have installed all required dependencies (see section 2). Execute:
 ```
 cd ORB_SLAM2
 chmod +x build.sh
 ./build.sh
-```
-
-Add the following line to your .bashrc:
-```
-export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:PATH/ORB_SLAM2/Examples/ROS
 ```
 
 This will create **libORB_SLAM2.so**  at *lib* folder and the executables **mono_tum**, **mono_kitti**, **rgbd_tum**, **stereo_kitti**, **mono_euroc** and **stereo_euroc** in *Examples* folder.

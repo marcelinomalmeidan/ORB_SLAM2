@@ -5,16 +5,16 @@
 #--------------------------------------------------------------------------------------------
 
 # Camera calibration and distortion parameters (OpenCV) 
-Camera.fx: 520.908620
-Camera.fy: 521.007327
-Camera.cx: 325.141442
-Camera.cy: 249.701764
+Camera.fx: 609.9031982421875
+Camera.fy: 609.9591064453125
+Camera.cx: 320.2873229980469
+Camera.cy: 239.86740112304688
 
-Camera.k1: 0.231222
-Camera.k2: -0.784899
-Camera.p1: -0.003257
-Camera.p2: -0.000105
-Camera.k3: 0.917205
+Camera.k1: 0.0
+Camera.k2: 0.0
+Camera.p1: 0.0
+Camera.p2: 0.0
+Camera.k3: 0.0
 
 Camera.width: 640
 Camera.height: 480
@@ -23,16 +23,16 @@ Camera.height: 480
 Camera.fps: 30.0
 
 # IR projector baseline times fx (aprox.)
-Camera.bf: 40.0
+Camera.bf: 9.20
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
 
 # Close/Far threshold. Baseline times.
-ThDepth: 40.0
+ThDepth: 30.0
 
 # Deptmap values factor 
-DepthMapFactor: 1
+DepthMapFactor: 1000.0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
@@ -68,3 +68,7 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
+#--------------------------------------------------------------------------------------------
+# Map Parameters
+#--------------------------------------------------------------------------------------------
+Map.mapfile: labmap.bin

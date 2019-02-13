@@ -454,12 +454,13 @@ void System::Shutdown()
         std::this_thread::sleep_for(std::chrono::microseconds(5000));
     }
 
+    if (is_save_map){
+        SaveMap(mapfile);
+    }
+
     std::cout << "Closing viewer!" << std::endl;
     if(mpViewer){
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
-    }
-    if (is_save_map){
-        SaveMap(mapfile);
     }
 
 }
@@ -643,7 +644,7 @@ void System::SaveMap(const string &filename)
         cerr << "Cannot Write to Mapfile: " << mapfile << std::endl;
         exit(-1);
     }
-    cout << "Saving Mapfile: " << mapfile << std::flush;
+    cout << "Saving Mapfile: " << mapfile << std::endl << std::flush;
     boost::archive::binary_oarchive oa(out, boost::archive::no_header);
     cout << "mpMap" << std::endl;
     oa << mpMap;
@@ -661,7 +662,7 @@ bool System::LoadMap(const string &filename)
         cerr << "Cannot Open Mapfile: " << mapfile << " , You need create it first!" << std::endl;
         return false;
     }
-    cout << "Loading Mapfile: " << mapfile << std::flush;
+    cout << "Loading Mapfile: " << mapfile << std::endl << std::flush;
     boost::archive::binary_iarchive ia(in, boost::archive::no_header);
     ia >> mpMap;
     ia >> mpKeyFrameDatabase;

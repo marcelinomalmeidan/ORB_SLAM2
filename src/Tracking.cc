@@ -588,7 +588,8 @@ void Tracking::Track()
 
                 Eigen::Quaternionf q_world(q_.w(), q_.z(), -q_.x(), -q_.y());
                 Eigen::Quaternionf q_world_rot1(cos(M_PI/4.0), 0.0, -sin(M_PI/4.0), 0.0);
-                Eigen::Quaternionf qworld_ = q_world_rot1*q_world;
+                Eigen::Quaternionf q_world_rot2(cos(M_PI/4.0), 0.0, 0.0, sin(M_PI/4.0));
+                Eigen::Quaternionf qworld_ = q_world_rot2*q_world_rot1*q_world;
 
                 // Populate ROS pose structure
                 geometry_msgs::PoseStamped pose_cam, pose_world;
@@ -603,6 +604,9 @@ void Tracking::Track()
                 pose_cam.header.frame_id = frame_id_;
 
                 pose_world = pose_cam;
+                pose_world.pose.position.x = -pose_cam.pose.position.x;
+                pose_world.pose.position.y =  pose_cam.pose.position.y;
+                pose_world.pose.position.z =  pose_cam.pose.position.z;
                 pose_world.pose.orientation.x = qworld_.x();
                 pose_world.pose.orientation.y = qworld_.y();
                 pose_world.pose.orientation.z = qworld_.z();

@@ -48,6 +48,7 @@ find_package(rosconsole REQUIRED)
 find_package(rostime REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 # Required for generating message type
 find_package(catkin REQUIRED)
@@ -92,6 +93,9 @@ src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
 src/Viewer.cc
+src/visualization_functions.cc
+src/msg_conversions.cc
+src/RvizDrawer.cc
 )
 
 target_link_libraries(${PROJECT_NAME}

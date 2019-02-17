@@ -40,6 +40,7 @@ class System;
 class Viewer
 {
 public:
+    int mUseViewer;
 
     Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const string &strSettingPath, bool mbReuseMap);
 

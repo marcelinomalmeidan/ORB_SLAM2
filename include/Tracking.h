@@ -37,11 +37,11 @@
 #include "Initializer.h"
 #include "MapDrawer.h"
 #include "System.h"
+#include "RvizDrawer.h"
 
 // ROS-related libraries
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include "ORB_SLAM2/PoseList.h"  // Custom message to send list of poses
 
 #include <mutex>
 
@@ -64,7 +64,7 @@ public:
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, bool bReuseMap=false);
 
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
-             KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, ros::NodeHandle *nh,
+             RvizDrawer* mpRvizDrawer, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, ros::NodeHandle *nh,
              bool bReuseMap=false);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
@@ -188,6 +188,9 @@ protected:
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
 
+    // Rviz drawer
+    RvizDrawer* mpRvizDrawer;
+
     //Map
     Map* mpMap;
 
@@ -226,17 +229,9 @@ protected:
     list<MapPoint*> mlpTemporalPoints;
 
     // ROS wrapper for publishing pose
-    // Camera frame has z pointing out of the image plane, x to the right of the image, y completes the triad
-    // 
-    // |------>x
-    // |
-    // |
-    // \/y
-    //
     ros::NodeHandle n_;
-    ros::Publisher pose_pub_cam_frame_; 
-    ros::Publisher pose_pub_world_frame_; 
-    std::string frame_id_ = "camera";
+    ros::Publisher pose_pub_world_frame_;
+    std::string frame_id_ = "slam";
     bool use_ros_ = false;
 };
 

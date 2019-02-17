@@ -152,7 +152,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 }
 
 Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
-                   MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB,
+                   MapDrawer *pMapDrawer, Map *pMap, RvizDrawer* pRvizDrawer, KeyFrameDatabase* pKFDB,
                    const string &strSettingPath, const int sensor, ros::NodeHandle *nh,
                    bool bReuseMap):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
@@ -162,9 +162,9 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
     //ROS stuff
     n_ = *nh;
-    pose_pub_cam_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseCamFrame", 10);
     pose_pub_world_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseENUFrame", 10);
     use_ros_ = true;
+    mpRvizDrawer = pRvizDrawer;
 
     // Load camera parameters from settings file
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
@@ -573,53 +573,15 @@ void Tracking::Track()
 
             // Publish current pose to ROS
             if(use_ros_) {
-                cv::Mat TransfMat = mCurrentFrame.mTcw;
-                Eigen::Vector3f t(TransfMat.at<float>(0,3), TransfMat.at<float>(1,3), TransfMat.at<float>(2,3));
-                Eigen::Matrix3f R;
-                R << TransfMat.at<float>(0,0), TransfMat.at<float>(0,1), TransfMat.at<float>(0,2),
-                     TransfMat.at<float>(1,0), TransfMat.at<float>(1,1), TransfMat.at<float>(1,2),
-                     TransfMat.at<float>(2,0), TransfMat.at<float>(2,1), TransfMat.at<float>(2,2);
-                Eigen::Quaternionf q(R);
 
-                // Set rotation in camera frame (z pointing outwards, x pointing to the right, y completes the triad)
-                Eigen::Quaternionf q_cam_rot1(cos(M_PI/4.0), 0.0, sin(M_PI/4.0), 0.0);
-                Eigen::Quaternionf q_cam_rot2(cos(M_PI/4.0), 0.0, 0.0, -sin(M_PI/4.0));    
-                Eigen::Quaternionf q_ = q_cam_rot1*q_cam_rot2*q.inverse();
+                // Capture poses
+                geometry_msgs::PoseStamped pose_world;
+                msg_conversions::orbslam_transform_to_ros_pose(mCurrentFrame.mTcw, &pose_world.pose);
+                pose_world.header.stamp = ros::Time(mCurrentFrame.mTimeStamp);
+                pose_world.header.frame_id = frame_id_;
 
-                Eigen::Quaternionf q_world(q_.w(), q_.z(), -q_.x(), -q_.y());
-                Eigen::Quaternionf q_world_rot1(cos(M_PI/4.0), 0.0, -sin(M_PI/4.0), 0.0);
-                Eigen::Quaternionf q_world_rot2(cos(M_PI/4.0), 0.0, 0.0, sin(M_PI/4.0));
-                Eigen::Quaternionf qworld_ = q_world_rot2*q_world_rot1*q_world;
-
-                // Populate ROS pose structure
-                geometry_msgs::PoseStamped pose_cam, pose_world;
-                pose_cam.pose.position.x = t(2);
-                pose_cam.pose.position.y = t(0);
-                pose_cam.pose.position.z = t(1);
-                pose_cam.pose.orientation.x = q_.x();
-                pose_cam.pose.orientation.y = q_.y();
-                pose_cam.pose.orientation.z = q_.z();
-                pose_cam.pose.orientation.w = q_.w();
-                pose_cam.header.stamp = ros::Time(mCurrentFrame.mTimeStamp);;
-                pose_cam.header.frame_id = frame_id_;
-
-                pose_world = pose_cam;
-                pose_world.pose.position.x = -pose_cam.pose.position.x;
-                pose_world.pose.position.y =  pose_cam.pose.position.y;
-                pose_world.pose.position.z =  pose_cam.pose.position.z;
-                pose_world.pose.orientation.x = qworld_.x();
-                pose_world.pose.orientation.y = qworld_.y();
-                pose_world.pose.orientation.z = qworld_.z();
-                pose_world.pose.orientation.w = qworld_.w();
-
-                // pose_list_.PoseList.push_back(pose);
-                // if (pose_list_.PoseList.size() > window_size_) {
-                //     pose_list_.PoseList.pop_back();
-                // }
-
-                pose_pub_cam_frame_.publish(pose_cam);
+                // pose_pub_cam_frame_.publish(pose_cam);
                 pose_pub_world_frame_.publish(pose_world);
-                // pose_list_pub_.publish(pose_list_);
             }
 
             // Check if we need to insert a new keyframe

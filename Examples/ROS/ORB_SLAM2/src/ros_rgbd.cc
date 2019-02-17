@@ -58,12 +58,16 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Check for whether or not to use the viewer
+    cv::FileStorage fSettings(argv[2], cv::FileStorage::READ);
+    int use_viewer = fSettings["Viewer.UseViewer"];
+
     // Start ROS
     ros::NodeHandle n("~");
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     // ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,&n,true,true);
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,&n,use_viewer,true);
 
     ImageGrabber igb(&SLAM);
 

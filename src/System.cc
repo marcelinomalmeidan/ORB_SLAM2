@@ -200,26 +200,26 @@ System::System(const string &strVocFile,
     cout << "Vocabulary loaded!" << endl << endl;
 
 
-    //Create KeyFrame Database
-    //Create the Map
-    if (!mapfile.empty() && LoadMap(mapfile))
-    {
+    // Create KeyFrame Database
+    // Create the Map
+    if (!mapfile.empty() && LoadMap(mapfile)) {
         bReuseMap = true;
-    }
-    else
-    {
+    } else {
         mpKeyFrameDatabase = new KeyFrameDatabase(mpVocabulary);
         mpMap = new Map();
     }
 
-    //Create Drawers. These are used by the Viewer
+    // Create Drawers. These are used by the Viewer
     mpFrameDrawer = new FrameDrawer(mpMap, bReuseMap);
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
-    //Initialize the Tracking thread
-    //(it will live in the main thread of execution, the one that called this constructor)
-    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
-                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, nh, bReuseMap);
+    // Create Rviz publisher
+    mpRvizDrawer = new RvizDrawer(mpMap, nh);
+
+    // Initialize the Tracking thread
+    // (it will live in the main thread of execution, the one that called this constructor)
+    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer, mpMap, mpRvizDrawer,
+                             mpKeyFrameDatabase, strSettingsFile, mSensor, nh, bReuseMap);
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);

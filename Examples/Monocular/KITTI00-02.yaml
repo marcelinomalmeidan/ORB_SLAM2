@@ -44,6 +44,7 @@ ORBextractor.minThFAST: 7
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
 #--------------------------------------------------------------------------------------------
+Viewer.UseViewer: 1
 Viewer.KeyFrameSize: 0.1
 Viewer.KeyFrameLineWidth: 1
 Viewer.GraphLineWidth: 1

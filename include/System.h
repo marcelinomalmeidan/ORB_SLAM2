@@ -35,7 +35,7 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
-#include "RvizDrawer.h"
+#include "RvizDrawer.h" 
 
 // ROS-related libraries
 #include <ros/ros.h>
@@ -51,6 +51,7 @@ namespace ORB_SLAM2
 
 class Viewer;
 class FrameDrawer;
+class RvizDrawer;
 class Map;
 class Tracking;
 class LocalMapping;

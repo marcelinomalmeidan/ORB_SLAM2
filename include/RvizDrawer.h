@@ -23,9 +23,10 @@
 
 #include <thread>
 
-#include"Map.h"
-#include"MapPoint.h"
-#include"KeyFrame.h"
+#include "Map.h"
+#include "MapPoint.h"
+#include "KeyFrame.h"
+#include "FrameDrawer.h"
 
 // ROS-related libraries
 #include <ros/ros.h>
@@ -34,18 +35,19 @@
 #include "visualization_functions.h"
 #include "msg_conversions.h"
 
-#include<mutex>
-
 namespace ORB_SLAM2
 {
+
+class FrameDrawer;
 
 class RvizDrawer
 {
 public:
 
-    RvizDrawer(Map* pMap, ros::NodeHandle *nh);
+    RvizDrawer(Map* pMap, FrameDrawer* pFrameDrawer, ros::NodeHandle *nh);
 
     Map* mpMap;
+    FrameDrawer* mpFrameDrawer;
 
     void DrawTask();
     void DrawMap();

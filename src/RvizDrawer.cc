@@ -24,8 +24,8 @@ namespace ORB_SLAM2
 {
 
 
-RvizDrawer::RvizDrawer(Map* pMap, ros::NodeHandle *nh):mpMap(pMap)
-{
+RvizDrawer::RvizDrawer(Map* pMap, FrameDrawer* pFrameDrawer, ros::NodeHandle *nh):
+                        mpMap(pMap), mpFrameDrawer(pFrameDrawer) {
     nh_ = *nh;
     map_points_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("MapPoints", 2);
     keyframes_pub_ = nh_.advertise<visualization_msgs::Marker>("Keyframes", 2, true);
@@ -44,7 +44,9 @@ RvizDrawer::RvizDrawer(Map* pMap, ros::NodeHandle *nh):mpMap(pMap)
 void RvizDrawer::DrawTask() {
 
     float fps = 30;
+    float mT = 1e3/fps;
     ros::Rate loop_rate(fps);
+    cv::namedWindow("ORB-SLAM2: Current Frame");
     while(ros::ok()) {
         loop_rate.sleep();
 
@@ -53,6 +55,11 @@ void RvizDrawer::DrawTask() {
 
         // Draw keyframes
         this->DrawKeyFrames();
+
+        // Draw image with keyframes
+        cv::Mat im = mpFrameDrawer->DrawFrame();
+        cv::imshow("ORB-SLAM2: Current Frame",im);
+        cv::waitKey(mT);
     }
 }
 

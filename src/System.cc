@@ -214,12 +214,12 @@ System::System(const string &strVocFile,
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
     // Create Rviz publisher
-    mpRvizDrawer = new RvizDrawer(mpMap, nh);
+    mpRvizDrawer = new RvizDrawer(mpMap, mpFrameDrawer, nh);
 
     // Initialize the Tracking thread
     // (it will live in the main thread of execution, the one that called this constructor)
-    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer, mpMap, mpRvizDrawer,
-                             mpKeyFrameDatabase, strSettingsFile, mSensor, nh, bReuseMap);
+    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer, mpMap, 
+                            mpKeyFrameDatabase, strSettingsFile, mSensor, nh, bReuseMap);
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
@@ -230,8 +230,7 @@ System::System(const string &strVocFile,
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
 
     //Initialize the Viewer thread and launch
-    if(bUseViewer)
-    {
+    if(bUseViewer) {
         mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile, bReuseMap);
         mptViewer = new thread(&Viewer::Run, mpViewer);
         mpTracker->SetViewer(mpViewer);

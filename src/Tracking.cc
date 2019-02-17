@@ -152,7 +152,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 }
 
 Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
-                   MapDrawer *pMapDrawer, Map *pMap, RvizDrawer* pRvizDrawer, KeyFrameDatabase* pKFDB,
+                   MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB,
                    const string &strSettingPath, const int sensor, ros::NodeHandle *nh,
                    bool bReuseMap):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
@@ -164,7 +164,6 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     n_ = *nh;
     pose_pub_world_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseENUFrame", 10);
     use_ros_ = true;
-    mpRvizDrawer = pRvizDrawer;
 
     // Load camera parameters from settings file
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);

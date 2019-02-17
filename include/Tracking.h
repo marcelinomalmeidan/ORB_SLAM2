@@ -64,7 +64,7 @@ public:
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, bool bReuseMap=false);
 
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
-             RvizDrawer* mpRvizDrawer, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, ros::NodeHandle *nh,
+             KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, ros::NodeHandle *nh,
              bool bReuseMap=false);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
@@ -187,9 +187,6 @@ protected:
     Viewer* mpViewer;
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
-
-    // Rviz drawer
-    RvizDrawer* mpRvizDrawer;
 
     //Map
     Map* mpMap;

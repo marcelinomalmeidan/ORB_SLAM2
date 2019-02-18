@@ -49,6 +49,8 @@ find_package(rostime REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 # Required for generating message type
 find_package(catkin REQUIRED)
@@ -105,6 +107,8 @@ ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 ${roscpp_LIBRARIES} 
+${image_transport_LIBRARIES} 
+${cv_bridge_LIBRARIES}
 )
 
 message(STATUS "Compile With map save/load function")

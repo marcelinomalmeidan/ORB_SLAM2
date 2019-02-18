@@ -281,10 +281,12 @@ void Tracking::SetViewer(Viewer *pViewer)
 }
 
 
-cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const double &timestamp)
+cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const std_msgs::Header &header)
 {
     mImGray = imRectLeft;
     cv::Mat imGrayRight = imRectRight;
+    const double timestamp = header.stamp.toSec();
+    mCurImgHeader = header;
 
     if(mImGray.channels()==3)
     {
@@ -321,10 +323,12 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
 }
 
 
-cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const double &timestamp)
+cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const std_msgs::Header &header)
 {
     mImGray = imRGB;
     cv::Mat imDepth = imD;
+    const double timestamp = header.stamp.toSec();
+    mCurImgHeader = header;
 
     if(mImGray.channels()==3)
     {
@@ -352,9 +356,11 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
 }
 
 
-cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
+cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const std_msgs::Header &header)
 {
     mImGray = im;
+    const double timestamp = header.stamp.toSec();
+    mCurImgHeader = header;
 
     if(mImGray.channels()==3)
     {
@@ -400,7 +406,7 @@ void Tracking::Track()
         else
             MonocularInitialization();
 
-        mpFrameDrawer->Update(this);
+        mpFrameDrawer->Update(this, mCurImgHeader);
 
         if(mState!=OK)
             return;
@@ -532,7 +538,7 @@ void Tracking::Track()
             mState=LOST;
 
         // Update drawer
-        mpFrameDrawer->Update(this);
+        mpFrameDrawer->Update(this, mCurImgHeader);
 
         // If tracking were good, check if we insert a keyframe
         if(bOK)

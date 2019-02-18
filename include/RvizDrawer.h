@@ -30,6 +30,9 @@
 
 // ROS-related libraries
 #include <ros/ros.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/Point.h>
 #include "visualization_functions.h"
@@ -52,11 +55,14 @@ public:
     void DrawTask();
     void DrawMap();
     void DrawKeyFrames();
+    void PublishImg();
 
 private:
 
     ros::NodeHandle nh_;
-    ros::Publisher map_points_pub_, keyframes_pub_, graph_pub_; 
+    ros::Publisher map_points_pub_, keyframes_pub_, graph_pub_;
+    image_transport::Publisher features_pub_;
+    image_transport::ImageTransport it_;
     std::string frame_id_;
     float point_size_;
     std_msgs::ColorRGBA white_color_, red_color_;

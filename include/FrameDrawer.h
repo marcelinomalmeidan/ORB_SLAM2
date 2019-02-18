@@ -21,6 +21,9 @@
 #ifndef FRAMEDRAWER_H
 #define FRAMEDRAWER_H
 
+#include <ros/ros.h>
+#include <std_msgs/Header.h>
+
 #include "Tracking.h"
 #include "MapPoint.h"
 #include "Map.h"
@@ -43,10 +46,11 @@ public:
     FrameDrawer(Map* pMap, bool bReuseMap=false);
 
     // Update info from the last processed frame.
-    void Update(Tracking *pTracker);
+    void Update(Tracking *pTracker, const std_msgs::Header &header);
 
     // Draw last processed frame.
     cv::Mat DrawFrame();
+    cv::Mat DrawFrame(std_msgs::Header *header);
 
 protected:
 
@@ -62,6 +66,7 @@ protected:
     vector<cv::KeyPoint> mvIniKeys;
     vector<int> mvIniMatches;
     int mState;
+    std_msgs::Header mHeader;
 
     Map* mpMap;
 

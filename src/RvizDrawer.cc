@@ -25,11 +25,12 @@ namespace ORB_SLAM2
 
 
 RvizDrawer::RvizDrawer(Map* pMap, FrameDrawer* pFrameDrawer, ros::NodeHandle *nh):
-                        mpMap(pMap), mpFrameDrawer(pFrameDrawer) {
+                        mpMap(pMap), mpFrameDrawer(pFrameDrawer), it_(nh_) {
     nh_ = *nh;
     map_points_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("MapPoints", 2);
     keyframes_pub_ = nh_.advertise<visualization_msgs::Marker>("Keyframes", 2, true);
     graph_pub_ = nh_.advertise<visualization_msgs::Marker>("Graph", 2, true);
+    features_pub_ = it_.advertise("/Image/Features", 1);
     frame_id_ = "slam";
     point_size_ = 0.005;
     white_color_ = visualization_functions::Color::White();
@@ -44,9 +45,7 @@ RvizDrawer::RvizDrawer(Map* pMap, FrameDrawer* pFrameDrawer, ros::NodeHandle *nh
 void RvizDrawer::DrawTask() {
 
     float fps = 30;
-    float mT = 1e3/fps;
     ros::Rate loop_rate(fps);
-    cv::namedWindow("ORB-SLAM2: Current Frame");
     while(ros::ok()) {
         loop_rate.sleep();
 
@@ -56,10 +55,8 @@ void RvizDrawer::DrawTask() {
         // Draw keyframes
         this->DrawKeyFrames();
 
-        // Draw image with keyframes
-        cv::Mat im = mpFrameDrawer->DrawFrame();
-        cv::imshow("ORB-SLAM2: Current Frame",im);
-        cv::waitKey(mT);
+        // Draw image with tracked features
+        this->PublishImg();
     }
 }
 
@@ -190,6 +187,17 @@ void RvizDrawer::DrawKeyFrames() {
         }
         graph_pub_.publish(graph_marker);
         // draw_graph_ = false;
+    }
+}
+
+void RvizDrawer::PublishImg() {
+    bool pub_img = (keyframes_pub_.getNumSubscribers() > 0);
+    if (pub_img) {
+        sensor_msgs::Image::Ptr out_img;
+        std_msgs::Header header;
+        cv::Mat im = mpFrameDrawer->DrawFrame(&header);
+        out_img = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, im).toImageMsg();
+        features_pub_.publish(out_img);
     }
 }
 

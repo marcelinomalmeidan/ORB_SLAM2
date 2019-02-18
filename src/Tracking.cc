@@ -576,19 +576,6 @@ void Tracking::Track()
             }
             mlpTemporalPoints.clear();
 
-            // Publish current pose to ROS
-            if(use_ros_) {
-
-                // Capture poses
-                geometry_msgs::PoseStamped pose_world;
-                msg_conversions::orbslam_transform_to_ros_pose(mCurrentFrame.mTcw, &pose_world.pose);
-                pose_world.header.stamp = ros::Time(mCurrentFrame.mTimeStamp);
-                pose_world.header.frame_id = frame_id_;
-
-                // pose_pub_cam_frame_.publish(pose_cam);
-                pose_pub_world_frame_.publish(pose_world);
-            }
-
             // Check if we need to insert a new keyframe
             if(NeedNewKeyFrame())
                 CreateNewKeyFrame();
@@ -601,6 +588,18 @@ void Tracking::Track()
             {
                 if(mCurrentFrame.mvpMapPoints[i] && mCurrentFrame.mvbOutlier[i])
                     mCurrentFrame.mvpMapPoints[i]=static_cast<MapPoint*>(NULL);
+            }
+
+            // Publish current pose to ROS
+            if(use_ros_) {
+                // Capture poses
+                geometry_msgs::PoseStamped pose_world;
+                msg_conversions::orbslam_transform_to_ros_pose(mCurrentFrame.mTcw, &pose_world.pose);
+                pose_world.header.stamp = ros::Time(mCurrentFrame.mTimeStamp);
+                pose_world.header.frame_id = frame_id_;
+
+                // pose_pub_cam_frame_.publish(pose_cam);
+                pose_pub_world_frame_.publish(pose_world);
             }
         }
 

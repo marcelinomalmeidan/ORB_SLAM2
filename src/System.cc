@@ -217,6 +217,9 @@ System::System(const string &strVocFile,
     // Create Rviz publisher
     mpRvizDrawer = new RvizDrawer(mpMap, mpFrameDrawer, nh);
 
+    // Create ROS service for switching localization and mapping modes
+    mpMapModeSrv = nh->advertiseService("is_mapping_mode", &System::IsMappingMode, this);
+
     // Initialize the Tracking thread
     // (it will live in the main thread of execution, the one that called this constructor)
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer, mpMap, 
@@ -848,6 +851,19 @@ bool System::LoadMap(const string &filename)
     Frame::nNextId = mnFrameId;
     cout << " ...done" << endl;
     in.close();
+    return true;
+}
+
+bool System::IsMappingMode(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
+    if(req.data == true) {
+        this->DeactivateLocalizationMode();
+        ROS_INFO("Switching to Mapping Mode...");
+    } else {
+        this->ActivateLocalizationMode();
+        ROS_INFO("Switching to Localization Mode...");
+    }
+    res.success = true;
+    res.message = "";
     return true;
 }
 

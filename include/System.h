@@ -40,7 +40,8 @@
 // ROS-related libraries
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include "ORB_SLAM2/PoseList.h"  // Custom message to send list of poses
+#include "geometry_msgs/PoseStamped.h"
+#include "std_srvs/SetBool.h"
 
 #include "BoostArchiver.h"
 // for map file io
@@ -143,6 +144,9 @@ public:
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
+    // Service for switching localization/mapping modes using ROS services
+    bool IsMappingMode(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
+
 private:
     // Save/Load functions
     void SaveMap(const string &filename);
@@ -189,6 +193,9 @@ private:
     std::thread* mptLocalMapping;
     std::thread* mptLoopClosing;
     std::thread* mptViewer;
+
+    // ROS service for switching between mapping and localization mode
+    ros::ServiceServer mpMapModeSrv;
 
     // Reset flag
     std::mutex mMutexReset;

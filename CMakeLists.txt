@@ -47,6 +47,7 @@ find_package(roscpp REQUIRED)
 find_package(rosconsole REQUIRED)
 find_package(rostime REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(image_transport REQUIRED)
@@ -69,8 +70,7 @@ ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
 ${std_msgs_INCLUDE_DIRS}
 ${roscpp_INCLUDE_DIRS}
-${std_msgs_INCLUDE_DIRS}
-${roscpp_INCLUDE_DIRS}
+${std_srvs_INCLUDE_DIRS}
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)

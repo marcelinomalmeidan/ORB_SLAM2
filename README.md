@@ -1,7 +1,10 @@
 # ORB-SLAM2
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
-**04 Feb 2019**: ORB_SLAM publishes current pose to topics. It published a pose in camera frame (z pointing outwards from the camera) and in world frame (z pointing up from initial pose). As of this version, ORB_SLAM2 always needs ROS to compile (one could compile ORB_SLAM2 without compiling its ROS version before).
+**04 Feb 2019**: ORB_SLAM publishes current pose to topics. As of this version, ORB_SLAM2 always needs ROS to compile (one could compile ORB_SLAM2 without compiling its ROS version before). Visualization is default in Rviz (see launch file). 
+
+- Command line for switching to localization mode: ```rosservice call /RGBD/is_mapping_mode false```
+- Command line for switching to mapping mode: ```rosservice call /RGBD/is_mapping_mode true```
 
 **14 Jul 2017**: Binary format ORB vocabulary and Map save/load are now supported(See section 10 and 11). See original repository: https://github.com/Alkaid-Benetnash
 

@@ -95,9 +95,9 @@ System::System(const string &strVocFile,
 
     //Create KeyFrame Database
     //Create the Map
-    if (!mapfile.empty() && LoadMap(mapfile))
-    {
+    if (!mapfile.empty() && LoadMap(mapfile)) {
         bReuseMap = true;
+        mbActivateLocalizationMode = true;
     }
     else
     {
@@ -204,6 +204,7 @@ System::System(const string &strVocFile,
     // Create the Map
     if (!mapfile.empty() && LoadMap(mapfile)) {
         bReuseMap = true;
+        mbActivateLocalizationMode = true;
     } else {
         mpKeyFrameDatabase = new KeyFrameDatabase(mpVocabulary);
         mpMap = new Map();

@@ -1,0 +1,18 @@
+<launch>
+
+<arg name="namespace" default="Frodo" />
+
+<group ns="$(arg namespace)">
+	  
+	  <!-- Launch ORB-SLAM2 -->
+	  <node pkg="ORB_SLAM2" type="RGBD" name="RGBD" 
+	    args="$(find ORB_SLAM2)/../../../Vocabulary/ORBvoc.bin $(find ORB_SLAM2)/../../../Examples/RGB-D/realsense.yaml"  output="screen"/>
+
+	  <!-- Launch Portrait Mode -->
+      <include file="$(find image_filters)/launch/portrait_mode_ns.launch"> 
+      		<param name="namespace" value="/$(arg namespace)"/>
+      </include>
+
+</group>
+
+</launch>

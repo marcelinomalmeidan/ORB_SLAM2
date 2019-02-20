@@ -191,7 +191,7 @@ void RvizDrawer::DrawKeyFrames() {
 }
 
 void RvizDrawer::PublishImg() {
-    bool pub_img = (keyframes_pub_.getNumSubscribers() > 0);
+    bool pub_img = (features_pub_.getNumSubscribers() > 0);
     if (pub_img) {
         sensor_msgs::Image::Ptr out_img;
         std_msgs::Header header;

@@ -48,7 +48,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /RGBD/MapPoints
+      Marker Topic: /Frodo/RGBD/MapPoints
       Name: Map Points
       Namespaces:
         new_points: true
@@ -57,19 +57,19 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /camera/rgb/image_raw
+      Image Topic: /Frodo/camera/rgb/image_raw
       Max Value: 1
       Median window: 5
       Min Value: 0
       Name: Input RGB
       Normalize Range: true
       Queue Size: 2
-      Transport Hint: compressed
+      Transport Hint: raw
       Unreliable: false
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /Image/Features
+      Image Topic: /Frodo/Image/Features
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -91,12 +91,12 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.0500000007
       Shape: Axes
-      Topic: /RGBD/CamPoseENUFrame
+      Topic: /Frodo/RGBD/CamPoseENUFrame
       Unreliable: false
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /RGBD/Keyframes
+      Marker Topic: /Frodo/RGBD/Keyframes
       Name: Keyframes
       Namespaces:
         keyframes: true
@@ -104,10 +104,18 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /RGBD/Graph
+      Marker Topic: /Frodo/RGBD/Graph
       Name: Graph
       Namespaces:
         graph: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /capture_waypoints/Waypoints
+      Name: WaypointsCaptured
+      Namespaces:
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -150,10 +158,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.539799273
+      Pitch: 0.45979932
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.82684684
+      Yaw: 2.92684937
     Saved: ~
 Window Geometry:
   Displays:

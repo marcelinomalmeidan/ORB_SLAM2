@@ -30,7 +30,7 @@ RvizDrawer::RvizDrawer(Map* pMap, FrameDrawer* pFrameDrawer, ros::NodeHandle *nh
     map_points_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("MapPoints", 2);
     keyframes_pub_ = nh_.advertise<visualization_msgs::Marker>("Keyframes", 2, true);
     graph_pub_ = nh_.advertise<visualization_msgs::Marker>("Graph", 2, true);
-    features_pub_ = it_.advertise("/Image/Features", 1);
+    features_pub_ = it_.advertise("Image/Features", 1);
     frame_id_ = "slam";
     point_size_ = 0.005;
     white_color_ = visualization_functions::Color::White();

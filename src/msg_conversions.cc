@@ -178,4 +178,34 @@ void orbslam_transform_to_ros_pose(const cv::Mat &TransfMat, geometry_msgs::Pose
   p->orientation = set_ros_quaternion(q.w(), q.z(), -q.x(), -q.y());
 }
 
+void orbslam_transform_to_ros_pose(const cv::Mat &TransfMat, geometry_msgs::Pose *pose_base,
+                                   geometry_msgs::Pose *pose_camera) {
+  // cv::Mat TransfMatInv = TransfMat.inv();
+  // Eigen::Vector3f tInv(TransfMatInv.at<float>(0,3), TransfMatInv.at<float>(1,3), TransfMatInv.at<float>(2,3));
+  // Get rotation
+  Eigen::Matrix3f R, Rinv;
+  R << TransfMat.at<float>(0,0), TransfMat.at<float>(0,1), TransfMat.at<float>(0,2),
+       TransfMat.at<float>(1,0), TransfMat.at<float>(1,1), TransfMat.at<float>(1,2),
+       TransfMat.at<float>(2,0), TransfMat.at<float>(2,1), TransfMat.at<float>(2,2);
+  Rinv = R.transpose();
+  Eigen::Quaternionf q(Rinv);
+  Eigen::Quaternionf q_enu(q.w(), q.z(), -q.x(), -q.y());
+
+  // Get translation
+  Eigen::Vector3f t(TransfMat.at<float>(0,3), TransfMat.at<float>(1,3), TransfMat.at<float>(2,3));
+  Eigen::Vector3f pos = -Rinv*t;
+
+  // Set output structure
+  pose_base->position = set_ros_point(pos(2), -pos(0), -pos(1));
+  pose_base->orientation = set_ros_quaternion(q.w(), q.z(), -q.x(), -q.y());
+
+  // Set camera pose
+  // Eigen::Quaternionf q_cam1(cos(M_PI/4.0), 0.0, sin(M_PI/4.0), 0.0);
+  // Eigen::Quaternionf q_cam2(cos(M_PI/4.0), 0.0, 0.0, -sin(M_PI/4.0));
+  Eigen::Quaternionf q_enu2cam(0.5, -0.5, 0.5, -0.5);
+  Eigen::Quaternionf q_cam = q_enu*q_enu2cam;
+  pose_camera->position = set_ros_point(pos(2), -pos(0), -pos(1));
+  pose_camera->orientation = set_ros_quaternion(q_cam.w(), q_cam.x(), q_cam.y(), q_cam.z());
+}
+
 }  // end namespace msg_conversions

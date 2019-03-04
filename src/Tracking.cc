@@ -163,6 +163,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     //ROS stuff
     n_ = *nh;
     pose_pub_world_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseENUFrame", 10);
+    pose_pub_cam_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseCamFrame", 10);
     use_ros_ = true;
 
     // Load camera parameters from settings file
@@ -592,13 +593,14 @@ void Tracking::Track()
             // Publish current pose to ROS
             if(use_ros_) {
                 // Capture poses
-                geometry_msgs::PoseStamped pose_world;
-                msg_conversions::orbslam_transform_to_ros_pose(mCurrentFrame.mTcw, &pose_world.pose);
+                geometry_msgs::PoseStamped pose_world, pose_cam;
+                msg_conversions::orbslam_transform_to_ros_pose(mCurrentFrame.mTcw, &pose_world.pose, &pose_cam.pose);
                 pose_world.header.stamp = ros::Time(mCurrentFrame.mTimeStamp);
                 pose_world.header.frame_id = frame_id_;
+                pose_cam.header = pose_world.header;
 
-                // pose_pub_cam_frame_.publish(pose_cam);
                 pose_pub_world_frame_.publish(pose_world);
+                pose_pub_cam_frame_.publish(pose_cam);
             }
         }
 

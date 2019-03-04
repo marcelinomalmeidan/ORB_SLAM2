@@ -1,6 +1,6 @@
 <launch>
 
-<arg name="namespace" default="Frodo" />
+<arg name="namespace" default="Bilbo" />
 
 <group ns="$(arg namespace)">
 	  

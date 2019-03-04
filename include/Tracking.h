@@ -228,7 +228,7 @@ protected:
 
     // ROS wrapper for publishing pose
     ros::NodeHandle n_;
-    ros::Publisher pose_pub_world_frame_;
+    ros::Publisher pose_pub_world_frame_, pose_pub_cam_frame_;
     std::string frame_id_ = "slam";
     bool use_ros_ = false;
 };

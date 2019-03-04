@@ -54,8 +54,11 @@ namespace msg_conversions {
   geometry_msgs::Quaternion array_to_ros_quat(float* array);
   Eigen::Affine3d           ros_pose_to_eigen_transform(const geometry_msgs::Pose & p);
   Eigen::Affine3d           ros_to_eigen_transform(const geometry_msgs::Transform & p);
-  void                      orbslam_transform_to_ros_pose(const cv::Mat &TransfMat, geometry_msgs::Pose *p);
-
+  void                      orbslam_transform_to_ros_pose(const cv::Mat &TransfMat,
+                                                          geometry_msgs::Pose *p);
+  void                      orbslam_transform_to_ros_pose(const cv::Mat &TransfMat,
+                                                          geometry_msgs::Pose *pose_base,
+                                                          geometry_msgs::Pose *pose_camera);
  }  // namespace msg_conversions
 
 #endif  // MSG_CONVERSIONS_MSG_CONVERSIONS_H_

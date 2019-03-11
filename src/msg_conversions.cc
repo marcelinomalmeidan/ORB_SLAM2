@@ -195,13 +195,11 @@ void orbslam_transform_to_ros_pose(const cv::Mat &TransfMat, geometry_msgs::Pose
   Eigen::Vector3f t(TransfMat.at<float>(0,3), TransfMat.at<float>(1,3), TransfMat.at<float>(2,3));
   Eigen::Vector3f pos = -Rinv*t;
 
-  // Set output structure
+  // Set pose of base link
   pose_base->position = set_ros_point(pos(2), -pos(0), -pos(1));
   pose_base->orientation = set_ros_quaternion(q.w(), q.z(), -q.x(), -q.y());
 
-  // Set camera pose
-  // Eigen::Quaternionf q_cam1(cos(M_PI/4.0), 0.0, sin(M_PI/4.0), 0.0);
-  // Eigen::Quaternionf q_cam2(cos(M_PI/4.0), 0.0, 0.0, -sin(M_PI/4.0));
+  // Set camera pose (z pointing outwards from the camera)
   Eigen::Quaternionf q_enu2cam(0.5, -0.5, 0.5, -0.5);
   Eigen::Quaternionf q_cam = q_enu*q_enu2cam;
   pose_camera->position = set_ros_point(pos(2), -pos(0), -pos(1));

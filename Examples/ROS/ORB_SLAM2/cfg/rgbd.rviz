@@ -3,8 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /WaypointsCaptured1
+      Expanded: ~
       Splitter Ratio: 0.5
     Tree Height: 238
   - Class: rviz/Selection
@@ -26,6 +25,8 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: FeatureImage
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -49,7 +50,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /RGBD/MapPoints
+      Marker Topic: /Sauron/RGBD/MapPoints
       Name: Map Points
       Namespaces:
         new_points: true
@@ -58,7 +59,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /camera/rgb/image_raw
+      Image Topic: /Sauron/camera/rgb/image_raw
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -70,7 +71,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /Image/Features
+      Image Topic: /Sauron/Image/Features
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -92,7 +93,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.0500000007
       Shape: Axes
-      Topic: /RGBD/CamPoseENUFrame
+      Topic: /Sauron/RGBD/CamPoseENUFrame
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -112,7 +113,7 @@ Visualization Manager:
       Value: false
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /RGBD/Keyframes
+      Marker Topic: /Sauron/RGBD/Keyframes
       Name: Keyframes
       Namespaces:
         keyframes: true
@@ -120,10 +121,10 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /RGBD/Graph
+      Marker Topic: /Sauron/RGBD/Keyframes
       Name: Graph
       Namespaces:
-        graph: true
+        keyframes: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -174,10 +175,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.509798467
+      Pitch: 0.404798806
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.11189032
+      Yaw: 3.60188937
     Saved: ~
 Window Geometry:
   Displays:

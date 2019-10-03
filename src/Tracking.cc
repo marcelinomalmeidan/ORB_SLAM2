@@ -163,11 +163,21 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     //ROS stuff
     n_ = *nh;
     pose_pub_world_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseENUFrame", 10);
+    com_pub_world_frame_ = n_.advertise<geometry_msgs::PoseStamped>("COMPoseENUFrame", 10);
     pose_pub_cam_frame_ = n_.advertise<geometry_msgs::PoseStamped>("CamPoseCamFrame", 10);
     use_ros_ = true;
 
     // Load camera parameters from settings file
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
+
+    // Get Center of mass position w.r.t. camera
+    float COM_x = fSettings["COM.x"];
+    float COM_y = fSettings["COM.y"];
+    float COM_z = fSettings["COM.z"];
+    cam_2_com_ = msg_conversions::set_ros_point(COM_x, COM_y, COM_z);
+    ROS_INFO("Center of mass w.r.t. camera: [%.3f, %.3f, %.3f]", COM_x, COM_y, COM_z);
+
+    // Intrinsic parameters
     float fx = fSettings["Camera.fx"];
     float fy = fSettings["Camera.fy"];
     float cx = fSettings["Camera.cx"];
@@ -599,7 +609,13 @@ void Tracking::Track()
                 pose_world.header.frame_id = frame_id_;
                 pose_cam.header = pose_world.header;
 
+                // Get pose of the center of mass
+                geometry_msgs::PoseStamped pose_com_world;
+                pose_com_world.header = pose_world.header;
+                msg_conversions::get_com_pose(pose_world.pose, cam_2_com_, &pose_com_world.pose);
+
                 pose_pub_world_frame_.publish(pose_world);
+                com_pub_world_frame_.publish(pose_com_world);
                 pose_pub_cam_frame_.publish(pose_cam);
             }
         }

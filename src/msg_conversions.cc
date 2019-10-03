@@ -28,6 +28,11 @@ geometry_msgs::Point set_ros_point(const double &x, const double &y, const doubl
   return n;
 }
 
+geometry_msgs::Point add_point(const geometry_msgs::Point &v1,
+                               const geometry_msgs::Point &v2) {
+  return set_ros_point(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+}
+
 geometry_msgs::Quaternion set_ros_quaternion(const double &w, const double &x, 
                                              const double &y, const double &z) {
   geometry_msgs::Quaternion q;
@@ -204,6 +209,26 @@ void orbslam_transform_to_ros_pose(const cv::Mat &TransfMat, geometry_msgs::Pose
   Eigen::Quaternionf q_cam = q_enu*q_enu2cam;
   pose_camera->position = set_ros_point(pos(2), -pos(0), -pos(1));
   pose_camera->orientation = set_ros_quaternion(q_cam.w(), q_cam.x(), q_cam.y(), q_cam.z());
+}
+
+geometry_msgs::Point convert_to_inertial_frame(
+    const geometry_msgs::Quaternion &quat,
+    const geometry_msgs::Point &pt) {
+  tf::Quaternion q(quat.x, quat.y, quat.z, quat.w);
+  tf::Quaternion q_body(pt.x, pt.y, pt.z, 0.0);
+  tf::Quaternion q_pt_world = q*q_body*q.inverse();
+  geometry_msgs::Point pt_world = set_ros_point(q_pt_world.x(), q_pt_world.y(), q_pt_world.z());
+  return pt_world;
+}
+
+void get_com_pose(const geometry_msgs::Pose &pose_cam,
+                  const geometry_msgs::Point &cam_2_com,
+                  geometry_msgs::Pose *pose_com) {
+  const geometry_msgs::Point cam_pos = pose_cam.position;
+  const geometry_msgs::Quaternion q_cam = pose_cam.orientation;
+  const geometry_msgs::Point cam2com_world = convert_to_inertial_frame(q_cam, cam_2_com);
+  pose_com->position = add_point(cam_pos, cam2com_world);
+  pose_com->orientation = q_cam;
 }
 
 }  // end namespace msg_conversions

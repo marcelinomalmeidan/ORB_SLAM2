@@ -228,9 +228,16 @@ protected:
 
     // ROS wrapper for publishing pose
     ros::NodeHandle n_;
-    ros::Publisher pose_pub_world_frame_, pose_pub_cam_frame_;
+    ros::Publisher pose_pub_world_frame_, com_pub_world_frame_;
+    ros::Publisher pose_pub_cam_frame_;
     std::string frame_id_ = "slam";
     bool use_ros_ = false;
+
+    // pose of the center of mass w.r.t. the camera
+    // Positive x: forward in the direction of the camera
+    // Positive y: To the left of the camera
+    // Positive z: Pointing up in the camera frame
+    geometry_msgs::Point cam_2_com_;
 };
 
 } //namespace ORB_SLAM

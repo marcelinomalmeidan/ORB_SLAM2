@@ -1,6 +1,6 @@
 <launch>
 
-<arg name="namespace" default="Bilbo" />
+<arg name="namespace" default="Sauron" />
 
 <group ns="$(arg namespace)">
 	  

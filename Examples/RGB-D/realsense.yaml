@@ -38,7 +38,7 @@ DepthMapFactor: 1000.0
 # This is used when publishing the position of
 # the vehicle's center of mass, which is just translated
 # w.r.t. the camera
-COM.x:  0.0
+COM.x:  -0.12
 COM.y:  0.0
 COM.z:  0.0
 
@@ -80,5 +80,5 @@ Viewer.ViewpointF: 500
 #--------------------------------------------------------------------------------------------
 # Map Parameters
 #--------------------------------------------------------------------------------------------
-Map.mapfile: /home/mma2739/ORB_SLAM2/maps/rovermap_demo2.bin
+Map.mapfile: /home/nvidia/ORB_SLAM2/maps/rovermap_demo.bin
 

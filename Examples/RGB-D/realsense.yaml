@@ -80,5 +80,5 @@ Viewer.ViewpointF: 500
 #--------------------------------------------------------------------------------------------
 # Map Parameters
 #--------------------------------------------------------------------------------------------
-Map.mapfile: /home/nvidia/ORB_SLAM2/maps/rovermap_demo.bin
+Map.mapfile: /home/mma2739/ORB_SLAM2/maps/rovermap_demo_new.bin
 

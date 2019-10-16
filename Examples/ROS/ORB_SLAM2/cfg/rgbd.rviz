@@ -136,9 +136,10 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /Sauron/RGBD/Keyframes
+      Marker Topic: /Sauron/RGBD/Graph
       Name: Graph
       Namespaces:
+        graph: true
         keyframes: true
       Queue Size: 100
       Value: true
@@ -190,10 +191,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.404798806
+      Pitch: 0.854799211
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.60188937
+      Yaw: 3.04189038
     Saved: ~
 Window Geometry:
   Displays:
